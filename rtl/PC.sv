@@ -26,7 +26,7 @@ module PC(
     always @(*) begin
         // 1. 默认情况：顺序执行
         next_pc = pc+4;
-
+/*
         // 2. 处理 JUMP (JAL, JALR)
         if (jump) begin
             if (opcode == 7'b1100111) begin
@@ -59,6 +59,7 @@ module PC(
                 end
             endcase
         end
+*/
     end
 
 
