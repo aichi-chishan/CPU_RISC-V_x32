@@ -10,7 +10,7 @@ module ALU (
     parameter SUB  = 4'd1; 
     parameter AND  = 4'd2;
     parameter OR   = 4'd3;
-    parameter XOR  = 4'd4;
+    parameter XOR  = 4'd4; // 按位异或
     parameter SLL  = 4'd5;
     parameter SRL  = 4'd6;
     parameter SRA  = 4'd7;
