@@ -1,9 +1,11 @@
 //control unit 控制单元 ID
+//https://blog.csdn.net/qq_70829439/article/details/129565365
 module CU(
     input  wire [6:0] opcode,  // 指令[6:0]
     input  wire [2:0] funct3,  // 指令[14:12]
     input  wire [6:0] funct7,  // 指令[31:25]
-    output reg        we,       // 寄存器写使能
+    output reg        reg_we     // 寄存器写使能
+    output reg        mem_we,   //内存写使能
     output reg        alu_src,  // ALU输入源选择 (0:寄存器, 1:立即数)
     output reg  [3:0] alu_ctrl  // 告诉ALU做什么运算 (加/减) 加0000 减0001
 );
@@ -20,13 +22,15 @@ module CU(
                         case(funct7)
                             //ADD
                             7'b0000000: begin
-                                we = 1'b1;
+                                reg_we = 1'b1;
+                                mem_we = 1'b0;
                                 alu_src = 1'b0;
                                 alu_ctrl = 4'b0000;
                             end
                             //SUB
                             7'b0100000: begin
-                                we = 1'b1;
+                                reg_we = 1'b1;
+                                mem_we = 1'b0;
                                 alu_src = 1'b0;
                                 alu_ctrl = 4'b0001;
                             end
@@ -37,14 +41,55 @@ module CU(
             //I型
             7'b0010011:begin
                 case(funct3)
-                //ADDI
+                    //ADDI
                     3'b000: begin
-                        we = 1'b1;
+                        reg_we = 1'b1;
+                        mem_we = 1'b0;
                         alu_src = 1'b1;
                         alu_ctrl = 4'b0000;
                    end
                 endcase
             end
+            //S型
+            7'b0100011:begin
+                case(func3)
+                    //SW Store Word 存储字
+                    3'b010:begin
+                        reg_we = 1'b0;
+                        mem_we = 1'b1;
+                        alu_src = 1'b1;
+                        alu_ctrl = 4'b0000;//ADD
+                    end
+                    //SH Store Halfword 存储半字
+
+                    //SB Store Byte 存储字节
+                endcase
+            end
+            //L型
+            7'b0000011:begin
+                case(func3)
+                    //LW Load Word 加载字（32位）
+                    3'b010:begin
+                        reg_we = 1'b1;
+                        mem_we = 1'b0;
+                        alu_src = 1'b1;
+                        alu_ctrl = 4'b0000;//ADD
+                    end
+                    //LH Load Halfword 加载半字（有符号扩展）
+
+                    //LB Load Byte  加载字节（有符号扩展）
+                endcase
+            end
+            //J型 JAL
+            7'b1101111:
+
+            //I型 JALR
+            7'b1100111:
+
+            //B型
+            7'1100011
+
+            //
         endcase
     end
 endmodule

@@ -25,6 +25,12 @@ module top(
     wire [31:0] alu_result;    // ALU 运算结果
     wire        zero_flag;     // ALU 零标志 (暂时不用，悬空)
 
+    // MEM (访存) 阶段信号
+    wire [31:0] dmem_rdata
+
+    // WB (写回) 阶段信号
+    wire  [31:0] final_wdata;  // 最终写回寄存器的数据
+
     // ====================================================
     // 2. 模块实例化 (连线)
     // ====================================================
@@ -59,7 +65,7 @@ module top(
         .raddr1 (instr[19:15]),    // rs1 索引
         .raddr2 (instr[24:20]),    // rs2 索引
         .waddr  (instr[11:7]),     // rd (写回目标) 索引
-        .wdata  (alu_result),      // 【回环】将计算结果写回寄存器
+        .wdata  (final_wdata),     // 连接MUX输出
         .rdata1 (rdata1),          // 输出到 ALU SrcA
         .rdata2 (rdata2)           // 输出到 MUX
     );
@@ -82,5 +88,22 @@ module top(
         .result   (alu_result),    // 结果输出，并连回 RegFile
         .zero     (zero_flag)      // 暂时不处理分支，留空
     );
+
+    // --- [MEM 阶段]: 数据存储器 ---
+
+    data_mem u_data_mem (
+        .clk   (clk),
+        .we    (mem_write),     // 新增控制信号：是否写内存
+        .addr  (alu_result),    // 内存地址来自 ALU 计算结果 (例如 0(x1))
+        .wdata (rdata2),        // 要写入的数据来自 rs2
+        .rdata (dmem_rdata)     // 读出的数据
+    );
+
+    // --- [WB 阶段]: 写回 MUX ---
+    // 如果是 LW 指令(mem_to_reg=1)，选内存数据；否则(ADD/ADDI)选 ALU 结果
+    assign final_wdata = (mem_to_reg) ? dmem_rdata : alu_result;
+
+
+
 
 endmodule

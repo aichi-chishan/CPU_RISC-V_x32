@@ -1,3 +1,4 @@
+//内存模块
 module data_mem (
     input wire clk,
     input wire we,
@@ -6,7 +7,7 @@ module data_mem (
     output wire [31:0] rdata
 );
     reg [31:0] ram [0:1023];
-    assign rdara = ram[addr[31:2]];
+    assign rdata = ram[addr[31:2]];
     always @(posedge clk)begin
         if (we) begin
             ram[addr[31:2]] <= wdata;
