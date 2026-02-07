@@ -1,5 +1,6 @@
 module id_ex_reg(
-    input wire clk, reset,
+    input wire clk,
+    input wire rst_n,
     // 数据输入
     input wire [31:0] id_pc, id_rdata1, id_rdata2, id_imm,
     input wire [4:0]  id_rd,
@@ -15,7 +16,7 @@ module id_ex_reg(
     output reg [3:0] ex_alu_ctrl
 );
     always @(posedge clk or negedge reset) begin
-        if (!reset) begin
+        if (!rst_n) begin
             // 清零所有输出
             ex_pc <= 0; ex_reg_we <= 0; /*...*/
         end else begin
