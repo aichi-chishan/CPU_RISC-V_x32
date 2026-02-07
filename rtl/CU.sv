@@ -6,6 +6,8 @@
     https://zhuanlan.zhihu.com/p/660618400
     opcade > funct3 > funct7
 */
+import config_pkg::*;
+
 module CU(
     input  wire [6:0] opcode,   // 指令[6:0]
     input  wire [2:0] funct3,   // 指令[14:12]
@@ -22,25 +24,6 @@ module CU(
     output reg  [1:0] wd_sel    // 写入数据来自何方 write_data_select
     //wd_sel 的作用:wd_sel 控制的是写回数据多路选择器 (Write Back Mux)，决定了是把 ALU 的结果、内存的数据还是 PC+4 写回到目标寄存器 (rd) 中。
 );
-    //ALU运算选择
-    parameter ADD  = 4'd0;
-    parameter SUB  = 4'd1; 
-    parameter AND  = 4'd2;
-    parameter OR   = 4'd3;
-    parameter XOR  = 4'd4; // 按位异或
-    parameter SLL  = 4'd5;
-    parameter SRL  = 4'd6;
-    parameter SRA  = 4'd7;
-    parameter SLT  = 4'd8;
-    parameter SLTU = 4'd9;
-    parameter PASS = 4'd10;
-    //ALU输入源选择
-    parameter REG = 1'b0;
-    parameter IMM = 1'b1;
-    //写入数据选择
-    parameter ALU_result = 2'b00;
-    parameter MEM_result = 2'b01;
-    parameter PC+4       = 2'b10;
 
     //=========================
     // Control logic
@@ -172,7 +155,7 @@ module CU(
             7'b1101111: begin 
                 reg_we = 1'b1; 
                 jump = 1'b1; 
-                wd_sel = PC+4;
+                wd_sel = PC_plus4;
             end
 
             //========================= 
@@ -183,7 +166,7 @@ module CU(
                 reg_we = 1'b1; 
                 jump = 1'b1; 
                 alu_src = IMM; 
-                wd_sel = PC+4;
+                wd_sel = PC_plsu4;
             end
 
             //========================= 
