@@ -1,5 +1,8 @@
 package config_pkg;
-//ALU运算选择
+/*
+import config_pkg::*;
+*/
+    //ALU运算选择 alu_ctrl
     parameter ADD  = 4'd0;
     parameter SUB  = 4'd1; 
     parameter AND  = 4'd2;
@@ -11,10 +14,10 @@ package config_pkg;
     parameter SLT  = 4'd8;
     parameter SLTU = 4'd9;
     parameter PASS = 4'd10;
-    //ALU输入源选择
+    //ALU输入源选择 alu_src
     parameter REG = 1'b0;
     parameter IMM = 1'b1;
-    //写入数据选择
+    //写入数据选择 wd_sel
     parameter ALU_result = 2'b00;
     parameter MEM_result = 2'b01;
     parameter PC_plus4   = 2'b10;

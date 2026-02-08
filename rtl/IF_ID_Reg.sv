@@ -19,6 +19,9 @@ module if_id_reg(
         if (!rst_n) begin
             id_pc    <= 32'b0;
             id_instr <= 32'b0; // 0x00000000 是 NOP 指令 (addi x0, x0, 0)
+            /*更严谨是 
+            id_instr <= 32'h00000013;
+            */
         end
         else if (flush) begin
             // 冲刷：将指令变为 NOP，PC 清零或保持

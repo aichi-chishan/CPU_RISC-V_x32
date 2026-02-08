@@ -1,3 +1,4 @@
+import config_pkg::*;
 module mem_wb_reg(
     input  wire clk,
     input  wire rst_n,
@@ -32,7 +33,7 @@ module mem_wb_reg(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             wb_reg_we     <= 1'b0;
-            wb_wd_sel     <= 2'b00;
+            wb_wd_sel     <= ALU_result;
             wb_alu_result <= 32'b0;
             wb_dmem_data  <= 32'b0;
             wb_pc_plus4   <= 32'b0;

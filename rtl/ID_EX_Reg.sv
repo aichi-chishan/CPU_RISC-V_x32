@@ -1,3 +1,4 @@
+import config_pkg::*;
 module id_ex_reg(
     input  wire clk,
     input  wire rst_n,
@@ -8,7 +9,7 @@ module id_ex_reg(
     // === 来自 ID 阶段的输入 ===
     // [WB 阶段控制]
     input  wire       id_reg_we,
-    input  wire [1:0] id_wd_sel,
+    input  wire [1:0] id_wd_sel, // wd是write data,选择写回寄存器的数据来源
     // [MEM 阶段控制]
     input  wire       id_mem_we,
     input  wire       id_branch,
@@ -26,7 +27,7 @@ module id_ex_reg(
     // 寄存器地址 (用于 Forwarding 和 WB)
     input  wire [4:0]  id_rs1_addr,
     input  wire [4:0]  id_rs2_addr,
-    input  wire [4:0]  id_rd_addr,
+    input  wire [4:0]  id_rd_addr, // Destination Register address
 
     // === 输出到 EX 阶段 ===
     // [WB 阶段控制]
@@ -59,9 +60,9 @@ module id_ex_reg(
             ex_mem_we   <= 1'b0;
             ex_branch   <= 1'b0;
             ex_jump     <= 1'b0;
-            ex_wd_sel   <= 2'b00;
-            ex_alu_src  <= 1'b0;
-            ex_alu_ctrl <= 4'b0;
+            ex_wd_sel   <= ALU_result;
+            ex_alu_src  <= REG;
+            ex_alu_ctrl <= ADD;
             
             // 数据部分清零 (可选，但建议清零)
             ex_pc       <= 32'b0;

@@ -1,3 +1,4 @@
+import config_pkg::*;
 module ex_mem_reg(
     input  wire clk,
     input  wire rst_n,
@@ -18,7 +19,7 @@ module ex_mem_reg(
     input  wire        ex_zero,       // ALU 零标志 (用于分支判断)
     
     // 目标寄存器
-    input  wire [4:0]  ex_rd_addr,
+    input  wire [4:0]  ex_rd_addr,    // 结果要写入哪个寄存器
 
     // === 输出到 MEM 阶段 ===
     // [WB 阶段控制]
@@ -43,7 +44,7 @@ module ex_mem_reg(
         if (!rst_n) begin
             mem_reg_we     <= 1'b0;
             mem_mem_we     <= 1'b0;
-            mem_wd_sel     <= 2'b00;
+            mem_wd_sel     <= ALU_result;
             mem_branch     <= 1'b0;
             mem_jump       <= 1'b0;
             mem_alu_result <= 32'b0;
