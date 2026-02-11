@@ -9,7 +9,7 @@ module forwarding_unit (
     input  [4:0] rd_wb,       // WB 阶段的目标寄存器
     input        reg_write_wb,  // WB 阶段是否写寄存器
     
-    // 输出：控制 ALU 输入 Mux 的信号
+    // 输出：控制 ALU 输入 Mux 的信号，两个输出对应ALU的两个操作数
     // 00: 原值, 10: 来自MEM转发, 01: 来自WB转发
     output reg [1:0] forward_a,
     output reg [1:0] forward_b

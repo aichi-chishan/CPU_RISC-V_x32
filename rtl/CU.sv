@@ -146,7 +146,7 @@ module CU(
                 alu_src = REG; 
                 alu_ctrl = SUB;
             end
-//PC模块可能得改
+
             //========================= 
             // JAL 
             // opcode = 1101111 
@@ -166,7 +166,7 @@ module CU(
                 reg_we = 1'b1; 
                 jump = 1'b1; 
                 alu_src = IMM; 
-                wd_sel = PC_plsu4;
+                wd_sel = PC_plus4;
             end
 
             //========================= 
