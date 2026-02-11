@@ -73,7 +73,7 @@ module top (
         .wd_sel(id_wd_sel)
     );
 
-    wire wb_reg_we;
+    //wire wb_reg_we;
     wire [4:0]  wb_waddr;
     wire [31:0] wb_wdata;
     wire [31:0] id_rdata1;
@@ -191,6 +191,17 @@ module top (
     assign branch_target_ex = ex_pc + ex_imm;
     assign pr_src = ex_jump || (ex_branch && ex_zero); // 跳转控制信号，连接到 PC 模块
 
+    wire ex_reg_we;
+    wire [1:0] ex_wd_sel;
+    wire ex_mem_we;
+    wire ex_branch;
+    wire ex_jump;
+    wire [31:0] ex_alu_result;
+    wire [31:0] ex_rdata2;
+    //wire [31:0] pc_plus4;
+    wire ex_zero;
+    wire [4:0] ex_rd_addr;
+
     ex_mem_reg u_ex_mem_reg (
         //inputs
         .clk(clk),
@@ -235,6 +246,7 @@ module top (
     wire [31:0] mem_pc_plus4;
     wire mem_zero;
     wire [4:0] mem_rd_addr;
+    wire [31:0] mem_rdata; // 从内存读取的数据
 
     data_mem u_data_mem (
         .clk(clk),
@@ -245,4 +257,39 @@ module top (
         //outputs
         .rdata(mem_rdata) // 从内存读取的数据，连接到 MEM/WB 寄存器
      );
+
+    mem_wb_reg u_mem_wb_reg (
+        //inputs
+        .clk(clk),
+        .rst_n(rst_n),
+        //MEM 阶段控制信号
+        .mem_reg_we(mem_reg_we),
+        .mem_wd_sel(mem_wd_sel),
+        //MEM 阶段数据路径
+        .mem_alu_result(mem_alu_result),
+        .mem_dmem_data(mem_rdata), // 从内存读出的数据 (Load Data)
+        .mem_pc_plus4(mem_pc_plus4), // PC+4 用于 JAL/JALR 写回
+        //MEM 阶段寄存器地址
+        .mem_rd_addr(mem_rd_addr),
+        //outputs
+        //WB 阶段控制信号
+        .wb_reg_we(wb_reg_we),
+        .wb_wd_sel(wb_wd_sel),
+        //WB 阶段数据路径
+        .wb_alu_result(wb_alu_result),
+        .wb_dmem_data(wb_dmem_data),
+        .wb_pc_plus4(wb_pc_plus4),
+        //WB 阶段寄存器地址
+        .wb_rd_addr(wb_rd_addr)
+    );
+     
+    //WB阶段
+    wire wb_reg_we;
+    wire [1:0] wb_wd_sel;
+    wire [31:0] wb_alu_result;
+    wire [31:0] wb_dmem_data;
+    wire [31:0] wb_pc_plus4;
+    wire [4:0] wb_rd_addr;
+
+    
 endmodule
