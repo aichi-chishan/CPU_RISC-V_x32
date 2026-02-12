@@ -23,10 +23,11 @@ module id_ex_reg(
     input  wire [31:0] id_rdata1,
     input  wire [31:0] id_rdata2,
     input  wire [31:0] id_imm,
+    input  wire [31:0] id_instr,
     
     // 寄存器地址 (用于 Forwarding 和 WB)
-    input  wire [4:0]  id_rs1_addr,
-    input  wire [4:0]  id_rs2_addr,
+    input  wire [4:0]  id_raddr1,
+    input  wire [4:0]  id_raddr2,
     input  wire [4:0]  id_rd_addr, // Destination Register address
 
     // === 输出到 EX 阶段 ===
@@ -46,10 +47,11 @@ module id_ex_reg(
     output reg  [31:0] ex_rdata1,
     output reg  [31:0] ex_rdata2,
     output reg  [31:0] ex_imm,
+    output reg  [31:0] ex_instr,
     
     // 寄存器地址
-    output reg  [4:0]  ex_rs1_addr,
-    output reg  [4:0]  ex_rs2_addr,
+    output reg  [4:0]  ex_raddr1,
+    output reg  [4:0]  ex_raddr2,
     output reg  [4:0]  ex_rd_addr
 );
 
@@ -69,8 +71,8 @@ module id_ex_reg(
             ex_rdata1   <= 32'b0;
             ex_rdata2   <= 32'b0;
             ex_imm      <= 32'b0;
-            ex_rs1_addr <= 5'b0;
-            ex_rs2_addr <= 5'b0;
+            ex_raddr1   <= 5'b0; // 修正：与端口定义一致
+            ex_raddr2   <= 5'b0; // 修正：与端口定义一致
             ex_rd_addr  <= 5'b0;
         end else begin
             // 正常传递
@@ -87,8 +89,8 @@ module id_ex_reg(
             ex_rdata2   <= id_rdata2;
             ex_imm      <= id_imm;
             
-            ex_rs1_addr <= id_rs1_addr;
-            ex_rs2_addr <= id_rs2_addr;
+            ex_raddr1   <= id_raddr1; // 修正：与端口定义一致
+            ex_raddr2   <= id_raddr2; // 修正：与端口定义一致
             ex_rd_addr  <= id_rd_addr;
         end
     end
