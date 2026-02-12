@@ -8,9 +8,12 @@ module PC(
     output reg [31:0] current_pc_out // 输出当前 PC 值
 );
 
+    parameter RESET_VECTOR = 32'h00000000; // 重置向量地址
+
+
     always @(posedge clk or negedge rst_n) begin
         if(!rst_n) begin
-            current_pc_out <= 32'h00000000;    
+            current_pc_out <= RESET_VECTOR;    
         end else if(stall) begin
             current_pc_out <= current_pc_out; // 保持当前 PC 不变
         end else if(pc_src) begin

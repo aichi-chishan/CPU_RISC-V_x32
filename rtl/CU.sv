@@ -20,7 +20,7 @@ module CU(
     output reg        branch,   // 分支信号
     output reg        jump,     // 跳转信号
 
-    output reg  [3:0] alu_ctrl  // ALU运算方式
+    output reg  [3:0] alu_ctrl, // ALU运算方式
     output reg  [1:0] wd_sel    // 写入数据来自何方 write_data_select
     //wd_sel 的作用:wd_sel 控制的是写回数据多路选择器 (Write Back Mux)，决定了是把 ALU 的结果、内存的数据还是 PC+4 写回到目标寄存器 (rd) 中。
 );
@@ -57,7 +57,7 @@ module CU(
                         case(funct7)
                             7'b0000000: alu_ctrl = ADD;
                             7'b0100000: alu_ctrl = SUB;
-                            default: ADD;
+                            default: alu_ctrl = ADD;
                         endcase
                     end
                     3'b111: alu_ctrl = AND; 
@@ -102,7 +102,7 @@ module CU(
                         7'b0100000: alu_ctrl = SRA; // SRAI
                         default:    alu_ctrl = SRL;
                     endcase
-                    default: ADD;
+                    default: alu_ctrl = ADD;
                 endcase
             end
 

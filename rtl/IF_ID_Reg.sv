@@ -18,15 +18,15 @@ module if_id_reg(
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             id_pc    <= 32'b0;
-            id_instr <= 32'b0; // 0x00000000 是 NOP 指令 (addi x0, x0, 0)
-            /*更严谨是 
+            //id_instr <= 32'b0; // 0x00000000 是 NOP 指令 (addi x0, x0, 0)
+             
             id_instr <= 32'h00000013;
-            */
+            
         end
         else if (flush) begin
             // 冲刷：将指令变为 NOP，PC 清零或保持
             id_pc    <= 32'b0; 
-            id_instr <= 32'b0; 
+            id_instr <= 32'h00000013; // 更加标准的 NOP (addi x0, x0, 0)
         end
         else if (stall) begin
             // 暂停：保持当前值不变（相当于不采样新数据）

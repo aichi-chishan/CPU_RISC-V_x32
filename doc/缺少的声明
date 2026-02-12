@@ -1,0 +1,12 @@
+ex_branch_target
+ex_pc_src
+ex_rd_addr
+
+mem_rd_addr
+mem_reg_we
+mem_alu_result
+
+wb_rd_addr
+wb_reg_we
+wb_wdata
+wb_waddr
