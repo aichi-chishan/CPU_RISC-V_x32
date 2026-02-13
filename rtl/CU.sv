@@ -38,11 +38,8 @@ module CU(
 
         case(opcode)
 
-            //========================= 
-            // R-type 寄存器指令
+// R-type 寄存器指令
             // opcode = 0110011 
-            //=========================
-
             7'b0110011:begin
 
                 reg_we = 1'b1;
@@ -74,11 +71,9 @@ module CU(
                 endcase
             end
 
-            //========================= 
-            // I-type 立即数算术运算
-            // opcode = 0010011 
-            //=========================
 
+// I-type 立即数算术运算
+            // opcode = 0010011 
             7'b0010011:begin
 
                 reg_we = 1'b1; 
@@ -103,12 +98,10 @@ module CU(
                 endcase
             end
 
-            //========================= 
-            // S-type 存储到内存 Store
+
+// S-type 存储到内存 Store
             // opcode = 0100011 
             // 对内存的读写只能通过LOAD 和 STORE 指令实现
-            //=========================
-
             7'b0100011:begin
 
                 mem_we = 1'b1; 
@@ -117,12 +110,10 @@ module CU(
 
             end
           
-            //========================= 
-            // L-type 载入寄存器 Load
+
+// L-type 载入寄存器 Load
             // opcode = 0000011 
             // 对内存的读写只能通过LOAD 和 STORE 指令实现
-            //=========================
-
             7'b0000011:begin
                 
                 reg_we = 1'b1;
@@ -131,34 +122,33 @@ module CU(
                 wd_sel = MEM_result;
 
             end
-//B型还得细分
-            //========================= 
-            // B-type 条件分支指令 Branch
-            // BEQ等于转移，BNE不等于跳转
-            // opcode = 1100011 
-            //=========================
 
+// B-type 条件分支指令 Branch
+            // opcode = 1100011 
             7'b1100011: begin
-                branch = 1'b1; 
+                //branch = 1'b1; 
                 alu_src = REG; 
-                alu_ctrl = SUB;
+                case(funct3)
+                    3'b000: alu_ctrl = SUB;
+                    3'b001: alu_ctrl = SUB;
+                    3'b100: alu_ctrl = SLT;
+                    3'b101: alu_ctrl = SLT;
+                    3'B110: alu_ctrl = SLTU;
+                    3'b111: alu_ctrl = SLTU;
+                    default: alu_ctrl = SUB;
+                endcase
             end
 
-            //========================= 
-            // JAL 
+// JAL 
             // opcode = 1101111 
-            //=========================
-
             7'b1101111: begin 
                 reg_we = 1'b1; 
                 jump = 1'b1; 
                 wd_sel = PC_plus4;
             end
 
-            //========================= 
-            // JALR 
+// JALR 
             // opcode = 1100111 
-            //========================= 
             7'b1100111: begin 
                 reg_we = 1'b1; 
                 jump = 1'b1; 
@@ -166,9 +156,7 @@ module CU(
                 wd_sel = PC_plus4;
             end
 
-            //========================= 
-            // default 
-            //========================= 
+// default 
             default:begin
                 reg_we = 1'b0;
             end

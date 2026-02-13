@@ -1,3 +1,4 @@
+`default_nettype none
 import config_pkg::*;
 module top (
     input wire clk,
@@ -213,12 +214,15 @@ module top (
     wire ex_pc_src; // 来自 EX 阶段的跳转控制信号
     assign ex_branch_target = ex_pc + ex_imm;
     
-    // 考虑到未来支持 BNE, 这里可以根据 funct3 进一步细化逻辑
-    // 假设 id_instr[14:12] 是 funct3
+    //B型指令细分
     wire [31:0] ex_instr;
     assign ex_funct3 = ex_instr[14:12];
-    wire ex_branch_cond_met = (ex_funct3 == 3'b000) ? ex_zero :  // BEQ
-                           (ex_funct3 == 3'b001) ? !ex_zero : // BNE
+    wire ex_branch_cond_met = (ex_funct3 == 3'b000) ?  ex_zero :  // BEQ
+                              (ex_funct3 == 3'b001) ? !ex_zero :  // BNE
+                              (ex_funct3 == 3'b100) ? !ex_zero :  // BLT
+                              (ex_funct3 == 3'b101) ?  ex_zero :  // BGE
+                              (ex_funct3 == 3'b110) ? !ex_zero :  // BLTU
+                              (ex_funct3 == 3'b111) ?  ex_zero :  // BGEU
                            1'b0;
     assign ex_pc_src = ex_jump || (ex_branch && ex_branch_cond_met);
 

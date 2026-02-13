@@ -1,5 +1,4 @@
-   `timescale 1ns / 1ps
-// `timescale <时间单位> / <时间精度>
+`timescale 1ns / 1ps
 
 
 module tb_ALU;
