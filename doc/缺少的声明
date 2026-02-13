@@ -10,3 +10,5 @@ wb_rd_addr
 wb_reg_we
 wb_wdata
 wb_waddr
+
+以上都够了

@@ -25,9 +25,6 @@ module CU(
     //wd_sel 的作用:wd_sel 控制的是写回数据多路选择器 (Write Back Mux)，决定了是把 ALU 的结果、内存的数据还是 PC+4 写回到目标寄存器 (rd) 中。
 );
 
-    //=========================
-    // Control logic
-    //=========================
 
     always @(*) begin
         //默认状态定义
@@ -68,7 +65,7 @@ module CU(
                         case(funct7)
                             7'b0000000: alu_ctrl = SRL;
                             7'b0100000: alu_ctrl = SRA;
-                            default: SRL;
+                            default: alu_ctrl = SRL;
                         endcase
                     end
                     3'b010: alu_ctrl = SLT; 

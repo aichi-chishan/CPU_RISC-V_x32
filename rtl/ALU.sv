@@ -1,4 +1,5 @@
 //ALU EX
+import config_pkg::*;
 module ALU (
     input  wire [31:0] src_a,   // 操作数 A
     input  wire [31:0] src_b,   // 操作数 B
@@ -6,16 +7,6 @@ module ALU (
     output reg  [31:0] result,  // 运算结果
     output wire        zero     // 结果是否为0 (分支指令用，当前可留空)
 );
-    parameter ADD  = 4'd0;
-    parameter SUB  = 4'd1; 
-    parameter AND  = 4'd2;
-    parameter OR   = 4'd3;
-    parameter XOR  = 4'd4; // 按位异或
-    parameter SLL  = 4'd5;
-    parameter SRL  = 4'd6;
-    parameter SRA  = 4'd7;
-    parameter SLT  = 4'd8;
-    parameter SLTU = 4'd9;
 
     always @(*) begin
         case(alu_ctrl)
