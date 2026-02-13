@@ -126,7 +126,7 @@ module CU(
 // B-type 条件分支指令 Branch
             // opcode = 1100011 
             7'b1100011: begin
-                //branch = 1'b1; 
+                branch = 1'b1; 
                 alu_src = REG; 
                 case(funct3)
                     3'b000: alu_ctrl = SUB;
@@ -144,6 +144,7 @@ module CU(
             7'b1101111: begin 
                 reg_we = 1'b1; 
                 jump = 1'b1; 
+                alu_src = IMM;
                 wd_sel = PC_plus4;
             end
 

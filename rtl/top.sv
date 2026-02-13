@@ -191,22 +191,40 @@ module top (
         .zero(ex_zero) // 结果是否为0 (分支指令用，当前可留空)
     );
     
+    //增加支持jalr指令
+    wire ex_is_jalr = (opcode == 7'b1100111); //中间变量
+    assign ex_branch_target = (ex_is_jalr) ? {ex_alu_result[31:1], 1'b0} : (ex_pc + ex_imm);
 
-    assign ex_branch_target = ex_pc + ex_imm;
     
     //B型指令细分
 
+    /*
     assign ex_funct3 = ex_instr[14:12];
     assign ex_branch_cond_met = (ex_funct3 == 3'b000) ?  ex_zero :  // BEQ
-                              (ex_funct3 == 3'b001) ? !ex_zero :  // BNE
-                              (ex_funct3 == 3'b100) ? !ex_zero :  // BLT
-                              (ex_funct3 == 3'b101) ?  ex_zero :  // BGE
-                              (ex_funct3 == 3'b110) ? !ex_zero :  // BLTU
-                              (ex_funct3 == 3'b111) ?  ex_zero :  // BGEU
+                                (ex_funct3 == 3'b001) ? !ex_zero :  // BNE
+                                (ex_funct3 == 3'b100) ? !ex_zero :  // BLT
+                                (ex_funct3 == 3'b101) ?  ex_zero :  // BGE
+                                (ex_funct3 == 3'b110) ? !ex_zero :  // BLTU
+                                (ex_funct3 == 3'b111) ?  ex_zero :  // BGEU
                            1'b0;
     assign ex_pc_src = ex_jump || (ex_branch && ex_branch_cond_met);
+    */
 
+    always_comb begin
+        branch_cond_met = 1'b0; // 默认值，防止锁存器 (Latch)
     
+        case (ex_funct3)
+            3'b000: branch_cond_met = ex_zero;       // BEQ
+            3'b001: branch_cond_met = ~ex_zero;      // BNE
+            3'b100: branch_cond_met = ~ex_zero;      // BLT (前提: ALU做SLT, Result=1则Zero=0)
+            3'b101: branch_cond_met = ex_zero;       // BGE (前提: ALU做SLT, Result=0则Zero=1)
+            3'b110: branch_cond_met = ~ex_zero;      // BLTU (前提: ALU做SLTU)
+            3'b111: branch_cond_met = ex_zero;       // BGEU (前提: ALU做SLTU)
+            default: branch_cond_met = 1'b0;
+        endcase
+    end
+
+    assign ex_pc_src = ex_jump || (ex_branch && branch_cond_met);
 
     ex_mem_reg u_ex_mem_reg (
         //inputs

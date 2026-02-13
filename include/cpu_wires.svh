@@ -67,6 +67,8 @@
     wire ex_alu_src;
     wire [2:0] ex_funct3;
 
+    logic branch_cond_met; //B型指令的中间变量
+
 //MEM阶段
     wire mem_reg_we;
     wire [1:0] mem_wd_sel;
