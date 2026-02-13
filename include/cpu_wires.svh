@@ -88,6 +88,18 @@
     wire [4:0]  wb_waddr;
     wire [31:0] wb_wdata;
 
+//漏掉的声明
+    wire [3:0] ex_alu_ctrl;
+    wire [31:0] ex_pc;
+    wire [31:0] ex_rdata1;
+    wire [31:0] ex_rdata2;
+    wire [31:0] ex_imm;
+    wire [4:0] ex_raddr1;
+    wire [4:0] ex_raddr2;
+    wire ex_alu_src;
+    wire [3:0] ex_alu_ctrl;
+    wire [2:0] ex_funct3;
+    
 //Hazard unit 冒险单元
     wire ex_mem_read;
 
