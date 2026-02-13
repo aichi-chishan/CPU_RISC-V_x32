@@ -1,12 +1,15 @@
+//top.sv
 `default_nettype none
 import config_pkg::*;
 module top (
     input wire clk,
     input wire rst_n
 );
+`include "cpu_wires.svh"
+
 //IF阶段
 
-    wire [31:0] current_pc; // 当前 PC 值
+
 
     PC u_PC (
         .clk(clk),
@@ -17,7 +20,7 @@ module top (
         .current_pc_out(current_pc) // 输出当前 PC 值
     );
 
-    wire [31:0] if_instr; // 从指令存储器读取的指令
+
     
     inst_mem u_inst_mem (
         .addr(current_pc), // 来自 PC 模块的当前 PC 值
@@ -38,26 +41,13 @@ module top (
     );
 
 //ID阶段
-    wire [31:0] id_instr;
-    wire [31:0] id_pc;
 
-    wire [6:0] opcode;
-    wire [2:0] funct3;
-    wire [6:0] funct7;
 
     assign opcode = id_instr[6:0];
     assign funct3 = id_instr[14:12];
     assign funct7 = id_instr[31:25];
 
-    wire id_reg_we;
-    wire id_mem_we;
-    wire id_alu_src;
 
-    wire id_branch;
-    wire id_jump;
-
-    wire [3:0] id_alu_ctrl;
-    wire [1:0] id_wd_sel;
 
     CU u_CU (
         //inputs
@@ -76,13 +66,11 @@ module top (
         .wd_sel(id_wd_sel)
     );
 
-    wire [4:0] id_raddr1;
-    wire [4:0] id_raddr2;
+
     assign id_raddr1 = id_instr[19:15];
     assign id_raddr2 = id_instr[24:20];
 
-    wire [31:0] id_rdata1;
-    wire [31:0] id_rdata2;
+
 
     reg_file u_reg_file (
         //inputs
@@ -97,14 +85,14 @@ module top (
         .rdata2(id_rdata2) // rs2 数据输出到 ID 阶段
     );
 
-    wire [31:0] id_imm;
+
 
     imm_gen u_imm_gen (
         .instr(id_instr), // 来自 ID 阶段的指令
         .imm_out(id_imm) // 输出立即数，连接到 ID/EX 寄存器
     );
 
-    wire [4:0] id_rd_addr; // 明确声明位宽，防止被默认为 1 位
+    
     assign id_rd_addr = id_instr[11:7];
 
     id_ex_reg u_id_ex_reg (
@@ -161,11 +149,7 @@ module top (
     //assign ex_mem_read = (ex_wd_sel == MEM_result);
     //以上三行在Hazrd unit写了
 
-    wire [4:0] ex_raddr1; // 修正：寄存器地址应为 5 位
-    wire [4:0] ex_raddr2; // 修正：寄存器地址应为 5 位
-    wire [4:0] ex_rd_addr; // 修正：寄存器地址应为 5 位
-    wire [1:0] ex_forward_a;
-    wire [1:0] ex_forward_b;
+
 
     forwarding_unit u_forwarding_unit (
         //inputs
@@ -181,9 +165,7 @@ module top (
         .forward_b(ex_forward_b)  // 转发控制信号 B，连接到 EX 阶段 ALU 输入 Mux
     );
 
-    wire [31:0] ex_src_a; // ALU 输入 A，经过转发选择
-    wire [31:0] ex_forward_rs2_val; // 经过转发的 rs2 值 (用于 Store Data 和 ALU 输入备选)
-    wire [31:0] ex_src_b; // 最终 ALU 输入 B (可能是 rs2 或 立即数)
+    
 
     assign ex_src_a = (ex_forward_a == 2'b00) ? ex_rdata1 :
                       (ex_forward_a == 2'b01) ? wb_wdata :
@@ -197,8 +179,7 @@ module top (
     // 2. 再根据 alu_src 选择 ALU 的第二个操作数 (寄存器/转发值 还是 立即数)
     assign ex_src_b = (ex_alu_src == 1'b1) ? ex_imm : ex_forward_rs2_val;
 
-    wire [31:0] ex_alu_result; 
-    wire ex_zero; 
+
 
     ALU u_ALU (
         //inputs
@@ -210,14 +191,13 @@ module top (
         .zero(ex_zero) // 结果是否为0 (分支指令用，当前可留空)
     );
     
-    wire [31:0] ex_branch_target; // 来自 EX 阶段的跳转目标地址
-    wire ex_pc_src; // 来自 EX 阶段的跳转控制信号
+
     assign ex_branch_target = ex_pc + ex_imm;
     
     //B型指令细分
-    wire [31:0] ex_instr;
+
     assign ex_funct3 = ex_instr[14:12];
-    wire ex_branch_cond_met = (ex_funct3 == 3'b000) ?  ex_zero :  // BEQ
+    assign ex_branch_cond_met = (ex_funct3 == 3'b000) ?  ex_zero :  // BEQ
                               (ex_funct3 == 3'b001) ? !ex_zero :  // BNE
                               (ex_funct3 == 3'b100) ? !ex_zero :  // BLT
                               (ex_funct3 == 3'b101) ?  ex_zero :  // BGE
@@ -226,12 +206,7 @@ module top (
                            1'b0;
     assign ex_pc_src = ex_jump || (ex_branch && ex_branch_cond_met);
 
-    wire ex_reg_we;
-    wire ex_wd_sel;
-
-    wire ex_mem_we;
-    wire ex_branch;
-    wire ex_jump;
+    
 
     ex_mem_reg u_ex_mem_reg (
         //inputs
@@ -267,20 +242,7 @@ module top (
     );
 
 //MEM阶段
-    wire mem_reg_we;
-    wire [1:0] mem_wd_sel;
-    wire mem_mem_we;
-    wire mem_branch;
-    wire mem_jump;
 
-    wire [31:0] mem_alu_result;
-    wire [31:0] mem_wdata;
-    wire [31:0] mem_pc_plus4;
-    wire mem_zero;
-
-    wire [4:0] mem_rd_addr;
-
-    wire [31:0] mem_rdata; // 从内存读取的数据
 
     data_mem u_data_mem (
         .clk(clk),
@@ -318,14 +280,7 @@ module top (
     );
      
 //WB阶段
-    wire wb_reg_we;
-    wire [1:0] wb_wd_sel;
-    wire [31:0] wb_alu_result;
-    wire [31:0] wb_dmem_data;
-    wire [31:0] wb_pc_plus4;
-    wire [4:0] wb_rd_addr;
 
-    wire [31:0] wb_final_data;
     
     // WB 阶段数据多路选择器 (MUX)
     // 根据 wb_wd_sel 选择写入寄存器的数据来源：ALU结果、内存数据 或 PC+4
@@ -333,20 +288,16 @@ module top (
                            (wb_wd_sel == MEM_result) ? wb_dmem_data :
                            (wb_wd_sel == PC_plus4  ) ? wb_pc_plus4 : wb_alu_result;
     
-    wire [4:0]  wb_waddr;
-    wire [31:0] wb_wdata;
+
     assign wb_wdata = wb_final_data; // 连接到 RegFile 的写数据端口
     assign wb_waddr = wb_rd_addr;    // 连接到 RegFile 的写地址端口
 
 //Hazard unit 冒险单元
 
-    wire stall_pc;     // 冻结 PC
-    wire stall_if_id;  // 冻结 IF/ID
-    wire flush_if_id;  // 冲刷 IF/ID
-    wire flush_id_ex;  // 冲刷 ID/EX
+
     
     // 生成 ex_mem_read 信号：如果 EX 阶段的写回选择是 MEM_result，说明是 Load 指令
-    wire ex_mem_read;
+
     assign ex_mem_read = (ex_wd_sel == MEM_result);
 
     hazard_unit u_hazard_unit (
