@@ -71,8 +71,10 @@ module id_ex_reg(
             ex_rdata1   <= 32'b0;
             ex_rdata2   <= 32'b0;
             ex_imm      <= 32'b0;
-            ex_raddr1   <= 5'b0; // 修正：与端口定义一致
-            ex_raddr2   <= 5'b0; // 修正：与端口定义一致
+            ex_instr    <= 32'b0;
+            
+            ex_raddr1   <= 5'b0; 
+            ex_raddr2   <= 5'b0; 
             ex_rd_addr  <= 5'b0;
         end else begin
             // 正常传递
@@ -88,9 +90,10 @@ module id_ex_reg(
             ex_rdata1   <= id_rdata1;
             ex_rdata2   <= id_rdata2;
             ex_imm      <= id_imm;
+            ex_instr    <= id_instr;
             
-            ex_raddr1   <= id_raddr1; // 修正：与端口定义一致
-            ex_raddr2   <= id_raddr2; // 修正：与端口定义一致
+            ex_raddr1   <= id_raddr1; 
+            ex_raddr2   <= id_raddr2; 
             ex_rd_addr  <= id_rd_addr;
         end
     end

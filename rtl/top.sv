@@ -192,7 +192,7 @@ module top (
     );
     
     //增加支持jalr指令
-    wire ex_is_jalr = (opcode == 7'b1100111); //中间变量
+    wire ex_is_jalr = (ex_instr[6:0] == 7'b1100111); //中间变量，必须使用EX阶段的指令
     assign ex_branch_target = (ex_is_jalr) ? {ex_alu_result[31:1], 1'b0} : (ex_pc + ex_imm);
 
     
@@ -209,7 +209,7 @@ module top (
                            1'b0;
     assign ex_pc_src = ex_jump || (ex_branch && ex_branch_cond_met);
     */
-
+    assign ex_funct3 = ex_instr[14:12];
     always_comb begin
         branch_cond_met = 1'b0; // 默认值，防止锁存器 (Latch)
     
@@ -223,7 +223,6 @@ module top (
             default: branch_cond_met = 1'b0;
         endcase
     end
-
     assign ex_pc_src = ex_jump || (ex_branch && branch_cond_met);
 
     ex_mem_reg u_ex_mem_reg (

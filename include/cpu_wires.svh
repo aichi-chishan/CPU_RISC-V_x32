@@ -53,7 +53,7 @@
     wire ex_branch_cond_met;
 
     wire ex_reg_we;
-    wire ex_wd_sel;
+    wire [1:0] ex_wd_sel;
 
     wire ex_mem_we;
     wire ex_branch;

@@ -3,22 +3,31 @@ package config_pkg;
 import config_pkg::*;
 */
     //ALU运算选择 alu_ctrl
-    parameter ADD  = 4'd0;
-    parameter SUB  = 4'd1; 
-    parameter AND  = 4'd2;
-    parameter OR   = 4'd3;
-    parameter XOR  = 4'd4; // 按位异或
-    parameter SLL  = 4'd5;
-    parameter SRL  = 4'd6;
-    parameter SRA  = 4'd7;
-    parameter SLT  = 4'd8;
-    parameter SLTU = 4'd9;
-    parameter PASS = 4'd10;
+    typedef enum logic [3:0] { 
+        ADD ,
+        SUB ,
+        AND ,
+        OR  ,
+        XOR , // 按位异或
+        SLL ,
+        SRL ,
+        SRA ,
+        SLT ,
+        SLTU,
+        PASS
+     } alu_ctrl_t;
+
     //ALU输入源选择 alu_src
-    parameter REG = 1'b0;
-    parameter IMM = 1'b1;
+    typedef enum logic { 
+        REG ,
+        IMM
+    } alu_src_t;
+
     //写入数据选择 wd_sel
-    parameter ALU_result = 2'b00;
-    parameter MEM_result = 2'b01;
-    parameter PC_plus4   = 2'b10;
+    typedef enum logic [1:0] { 
+        ALU_result ,
+        MEM_result ,
+        PC_plus4 
+    } wd_sel_t;
+
 endpackage
